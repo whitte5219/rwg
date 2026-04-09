@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Redirect • Linkify</title>
+<link rel="stylesheet" href="/style.css"/><link rel="icon" href="/favicon.ico">
+<meta name="theme-color" content="#0b0714"/>
+</head><body class="noScroll">
+<canvas id="bg"></canvas>
+<div class="redirectWrap">
+  <main class="view">
+  <section id="redirCard" class="card redirCard">
+    <div class="redirHead">
+      <img id="redirIcon" class="redirIcon hidden" alt=""/>
+      <div><h2 id="redirName">Redirect</h2><div id="redirDesc" class="muted hidden"></div></div>
+    </div>
+    <div id="redirMeta" class="redirMeta"></div>
+    <div class="hr"></div>
+
+    <div id="captchaWrap" class="hidden">
+      <div class="captchaBox">
+        <div class="captchaTop"><div class="captchaTitle">Human verification</div><div id="captchaState" class="captchaState">ready</div></div>
+        <button id="captchaBtn" class="captchaBtn"><span class="box"></span><span>I’m not a bot</span></button>
+        <div id="captchaMsg" class="captchaMsg muted"></div>
+      </div>
+      <div class="hr"></div>
+    </div>
+
+    <div id="countdown" class="countdown hidden"></div>
+    <div class="row">
+      <button id="redirBtn" class="btn primary hidden">Continue</button>
+    </div>
+    <div id="redirError" class="error hidden"></div>
+  </section>
+  </main>
+</div>
+<script type="module" src="/redirect.js"></script>
+</body></html>
