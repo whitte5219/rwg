@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Linkify</title>
+<link rel="stylesheet" href="/style.css"/><link rel="icon" href="/favicon.ico">
+<meta name="theme-color" content="#0b0714"/>
+</head><body>
+<canvas id="bg"></canvas>
+<div id="app">
+<header class="topbar">
+  <div class="brand"><div class="logoDot"></div><div class="brandText"><div class="brandName">Linkify</div><div class="brandSub">custom redirects</div></div></div>
+  <div class="topActions"><button id="btnHome" class="btn ghost hidden">Home</button><button id="btnCreate" class="btn primary">Create link</button></div>
+</header>
+
+<main id="homeView" class="view">
+  <section class="card">
+    <div class="row between">
+      <div><h2>Your links</h2><div class="muted small">This device can own up to <b>5</b> links.</div></div>
+      <button id="btnOpenDashboard" class="btn ghost">Dashboard</button>
+    </div>
+    <div class="hr"></div>
+    <div id="linksList" class="list"></div>
+  </section>
+</main>
+
+<main id="dashView" class="view hidden">
+  <section class="card">
+    <div class="dashTop">
+      <div>
+        <div class="titleRow"><h2 id="dashTitle">Dashboard</h2><span id="statusPill" class="pill">—</span></div>
+        <div class="linksRow">
+          <div class="kv"><div class="k">Original</div><div class="v"><a id="origLink" href="#" target="_blank" rel="noreferrer">—</a></div></div>
+          <div class="kv"><div class="k">Redirect</div><div class="v"><a id="redirLink" href="#" target="_blank" rel="noreferrer">—</a></div></div>
+        </div>
+      </div>
+      <div class="dashBtns">
+        <button id="btnCopyRedirect" class="btn">Copy</button>
+        <button id="btnOpenRedirect" class="btn ghost">Open</button>
+        <button id="btnDeleteLink" class="btn danger">Delete</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="settings">Settings</button>
+      <button class="tab" data-tab="logs">Link logs</button>
+    </div>
+
+    <div id="tab_overview" class="tabBody">
+      <div class="stats">
+        <div class="stat"><div class="statK">Entries</div><div id="statEntries" class="statV">0</div></div>
+        <div class="stat"><div class="statK">Redirects</div><div id="statRedirects" class="statV">0</div></div>
+        <div class="stat"><div class="statK">Time left</div><div id="statTimeLeft" class="statV">—</div></div>
+        <div class="stat"><div class="statK">Enter limit</div><div id="statEnterLimit" class="statV">—</div></div>
+      </div>
+      <div class="hr"></div>
+      <div class="muted small">Chart will be added later.</div>
+    </div>
+
+    <div id="tab_settings" class="tabBody hidden">
+      <div class="grid2">
+        <div class="card inner">
+          <h3>Link</h3>
+          <label class="lbl">Original URL</label><input id="setUrl" class="in" placeholder="https://..."/>
+          <div class="row"><button id="btnSaveUrl" class="btn">Save URL</button></div>
+          <div class="hr"></div>
+          <label class="lbl">Enabled</label><div class="row"><label class="chk"><input id="setEnabled" type="checkbox"/> Active</label></div>
+
+          <div class="hr"></div>
+          <h3>Profile</h3>
+          <label class="chk"><input id="setProfileOn" type="checkbox"/> Enable profile customization</label>
+          <div id="profileFields" class="subgroup hidden">
+            <label class="lbl">Icon URL</label><input id="setIcon" class="in" placeholder="https://..."/>
+            <label class="lbl">Name</label><input id="setName" class="in" placeholder="My link"/>
+            <label class="lbl">Description</label><textarea id="setDesc" class="ta" placeholder="Short description..."></textarea>
+            <div class="grid2">
+              <div><label class="lbl">Primary color</label><input id="setPrimary" class="in" placeholder="#7c3aed"/></div>
+              <div><label class="lbl">Secondary color</label><input id="setSecondary" class="in" placeholder="#a78bfa"/></div>
+            </div>
+            <label class="lbl">Box background URL</label><input id="setBoxBg" class="in" placeholder="https://..."/>
+          </div>
+        </div>
+
+        <div class="card inner">
+          <h3>Redirect flow</h3>
+          <label class="chk"><input id="setAutoRedirect" type="checkbox"/> Auto redirect</label>
+          <label class="chk"><input id="setInstantRedirect" type="checkbox"/> Instant redirect (skips everything)</label>
+          <div class="hr"></div>
+          <label class="chk"><input id="setPreloadOn" type="checkbox"/> Link preload</label>
+          <label class="lbl">Preload seconds</label><input id="setPreloadSec" class="in" type="number" min="0.0" step="0.1"/>
+          <div class="note small">If <b>Profile</b> is enabled: preload is forced to <b>≥ 0.2s</b>, defaults to <b>0.2</b>, and cannot be turned off. <b>Instant redirect</b> overrides preload.</div>
+          <div class="hr"></div>
+          <label class="chk"><input id="setCaptchaOn" type="checkbox"/> Captcha</label>
+          <div class="note small">2s mouse-move human check + 10s cooldown on fail.</div>
+          <div class="hr"></div>
+          <h3>Expiration</h3>
+          <label class="chk"><input id="setExpOn" type="checkbox"/> Enable expiration</label>
+          <div id="expFields" class="subgroup hidden">
+            <label class="lbl">Expires in (seconds)</label><input id="setExpSec" class="in" type="number" min="30" max="259200" step="1"/>
+            <label class="chk"><input id="setShowExp" type="checkbox"/> Show time left to users</label>
+          </div>
+          <div class="hr"></div>
+          <h3>Enter limit</h3>
+          <label class="chk"><input id="setLimitOn" type="checkbox"/> Enable enter limit</label>
+          <div id="limitFields" class="subgroup hidden">
+            <label class="lbl">Max entries</label><input id="setLimitCount" class="in" type="number" min="1" step="1"/>
+            <label class="chk"><input id="setNoRepeat" type="checkbox"/> Same client entries not counted</label>
+            <label class="chk"><input id="setShowLimit" type="checkbox"/> Show enter limit to users</label>
+          </div>
+          <div class="hr"></div>
+          <h3>Webhooks</h3>
+          <label class="chk"><input id="setHooksOn" type="checkbox"/> Enable webhook notifications</label>
+          <div id="hooksFields" class="subgroup hidden">
+            <label class="lbl">Webhook 1</label><input id="setHook1" class="in" placeholder="https://..."/>
+            <label class="lbl">Webhook 2</label><input id="setHook2" class="in" placeholder="https://..."/>
+            <label class="lbl">Webhook 3</label><input id="setHook3" class="in" placeholder="https://..."/>
+          </div>
+          <div class="hr"></div>
+          <div class="row"><button id="btnSaveSettings" class="btn primary">Save settings</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab_logs" class="tabBody hidden">
+      <div class="row between"><h3>Entries</h3><button id="btnClearLogs" class="btn danger ghost">Clear logs</button></div>
+      <div class="muted small">Shows last 200 logs (newest first).</div>
+      <div class="hr"></div>
+      <div id="logsList" class="list"></div>
+    </div>
+  </section>
+</main>
+
+<div id="modalBackdrop" class="modalBackdrop hidden"></div>
+<div id="createModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modalCard">
+    <div class="row between"><h2>Create link</h2><button id="btnCloseModal" class="xbtn" aria-label="Close">✕</button></div>
+    <label class="lbl">Original URL</label><input id="newUrl" class="in" placeholder="https://example.com"/>
+    <div class="row"><button id="btnGenerate" class="btn primary">Generate</button><button id="btnCancelCreate" class="btn ghost">Cancel</button></div>
+    <div id="genResult" class="hidden">
+      <div class="hr"></div>
+      <div class="kv"><div class="k">Redirect link</div><div class="v"><a id="genLink" href="#" target="_blank" rel="noreferrer">—</a></div></div>
+      <div class="row"><button id="btnStartLink" class="btn primary">Start</button><button id="btnAbortLink" class="btn ghost">Cancel</button></div>
+    </div>
+    <div id="modalErr" class="error hidden"></div>
+  </div>
+</div>
+
+<!-- Log Detail Modal -->
+<div id="logDetailModal" class="modal hidden">
+  <div class="modalCard">
+    <div class="row between">
+      <h2>Entry details</h2>
+      <button id="closeLogDetailModal" class="xbtn" aria-label="Close">✕</button>
+    </div>
+    <div id="logDetailContent" class="logDetailContent"></div>
+  </div>
+</div>
+
+</div>
+<script type="module" src="/script.js"></script>
+</body></html>
